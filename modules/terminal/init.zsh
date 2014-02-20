@@ -6,7 +6,7 @@
 #
 
 # Return if requirements are not found.
-if [[ "$TERM" == (dumb|linux|*bsd*) ]]; then
+if [[ "$TERM" == 'dumb' ]]; then
   return 1
 fi
 
@@ -64,13 +64,27 @@ function _terminal-set-titles-with-command {
   fi
 }
 
+# from sorin's prompt
+function prompt_sorin_pwd {
+  local pwd="${PWD/#$HOME/~}"
+
+  if [[ "$pwd" == (#m)[/~] ]]; then
+    _prompt_sorin_pwd="$MATCH"
+    unset MATCH
+  else
+    _prompt_sorin_pwd="${${${(@j:/:M)${(@s:/:)pwd}##.#?}:h}%/}/${pwd:t}"
+  fi
+}
+
 # Sets the tab and window titles with a given path.
 function _terminal-set-titles-with-path {
   emulate -L zsh
   setopt EXTENDED_GLOB
 
-  local absolute_path="${${1:a}:-$PWD}"
-  local abbreviated_path="${absolute_path/#$HOME/~}"
+#   local absolute_path="${${1:a}:-$PWD}"
+#   local abbreviated_path="${absolute_path/#$HOME/~}"
+  prompt_sorin_pwd
+  local abbreviated_path="$_prompt_sorin_pwd"
   local truncated_path="${abbreviated_path/(#m)?(#c15,)/...${MATCH[-12,-1]}}"
   unset MATCH
 
@@ -113,7 +127,7 @@ fi
 
 # Set up non-Apple terminals.
 if zstyle -t ':prezto:module:terminal' auto-title \
-  && ( ! [[ -n "$STY" || -n "$TMUX" ]] )
+  && ( ! [[ -n "$STY" ]] )
 then
 	# Sets the tab and window titles before the prompt is displayed.
 	add-zsh-hook precmd _terminal-set-titles-with-path
