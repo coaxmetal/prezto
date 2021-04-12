@@ -68,18 +68,6 @@ function _terminal-set-titles-with-command {
   fi
 }
 
-# from sorin's prompt
-function prompt_sorin_pwd {
-  local pwd="${PWD/#$HOME/~}"
-
-  if [[ "$pwd" == (#m)[/~] ]]; then
-    _prompt_sorin_pwd="$MATCH"
-    unset MATCH
-  else
-    _prompt_sorin_pwd="${${${(@j:/:M)${(@s:/:)pwd}##.#?}:h}%/}/${pwd:t}"
-  fi
-}
-
 # Sets the tab and window titles with a given path.
 function _terminal-set-titles-with-path {
   emulate -L zsh
